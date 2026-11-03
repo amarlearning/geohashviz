@@ -4,7 +4,7 @@
 
 GeohashViz.com is a React + TypeScript single-page application that visualizes geohashes on an interactive Leaflet map. Users paste geohash strings, see their bounding boxes rendered as purple rectangles, and optionally analyze distances between geohashes using multiple calculation modes.
 
-**Live site:** https://geohashviz.com
+**Live site:** https://geohashviz.amarpandey.me
 **Hosting:** GitHub Pages
 **Node.js requirement:** 20.x
 

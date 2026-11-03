@@ -14,7 +14,7 @@ A modern web application for visualizing multiple geohashes on an interactive ma
 
 ## Demo
 
-Visit [GeohashViz.com](https://geohashviz.com) to try it out!
+Visit [geohashviz.amarpandey.me](https://geohashviz.amarpandey.me) to try it out!
 
 ## Installation
 

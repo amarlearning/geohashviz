@@ -2,7 +2,7 @@
   "name": "geohashviz.com",
   "version": "1.0.0",
   "private": true,
-  "homepage": "https://geohashviz.com",
+  "homepage": "https://geohashviz.amarpandey.me",
   "engines": {
     "node": "20.x"
   },
