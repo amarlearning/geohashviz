@@ -360,7 +360,7 @@ const DistanceAnalysisFeature = () => {
                 formats? Want to see other spatial analysis features? Let us
                 know through{" "}
                 <a
-                  href="https://github.com/amarlearning/geohashviz.com/issues"
+                  href="https://github.com/amarlearning/geohashviz/issues"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

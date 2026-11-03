@@ -159,7 +159,7 @@ const About = () => {
                   everyone.
                 </p>
                 <a
-                  href="https://github.com/amarlearning/geohashviz.com"
+                  href="https://github.com/amarlearning/geohashviz"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="cta-button"

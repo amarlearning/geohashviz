@@ -320,7 +320,7 @@ const BuildingGeohashViz = () => {
                   <li>
                     Fork the repository on{" "}
                     <a
-                      href="https://github.com/amarlearning/geohashviz.com"
+                      href="https://github.com/amarlearning/geohashviz"
                       target="_blank"
                       rel="noopener noreferrer"
                     >

@@ -53,7 +53,7 @@ const InfoButton = () => {
       {show && (
         <div className="info-popup">
           <div className="info-popup-content">
-            <h3>GeohashViz.com</h3>
+            <h3>GeohashViz</h3>
             <p>
               A modern web application for visualizing multiple geohashes on an
               interactive map. Perfect for developers working with
@@ -96,7 +96,7 @@ const InfoButton = () => {
             <p>Access via Advanced Options panel below the zoom controls.</p>
             <div className="github-link-container">
               <a
-                href="https://github.com/amarlearning/geohashviz.com"
+                href="https://github.com/amarlearning/geohashviz"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="github-star"

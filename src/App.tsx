@@ -74,7 +74,7 @@ function AppContent() {
                 Blog
               </Nav.Link>
               <Nav.Link
-                href="https://github.com/amarlearning/geohashviz.com"
+                href="https://github.com/amarlearning/geohashviz"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="github-link"

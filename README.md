@@ -1,4 +1,4 @@
-# GeohashViz.com
+# GeohashViz
 
 A modern web application for visualizing multiple geohashes on an interactive map. Perfect for developers working with location-based data and geohashing algorithms.
 
@@ -20,10 +20,10 @@ Visit [geohashviz.amarpandey.me](https://geohashviz.amarpandey.me) to try it out
 
 ```bash
 # Clone the repository
-git clone https://github.com/amarlearning/geohashviz.com.git
+git clone https://github.com/amarlearning/geohashviz.git
 
 # Navigate to project directory
-cd geohashviz.com
+cd geohashviz
 
 # Install dependencies
 npm install
@@ -36,7 +36,7 @@ npm start
 
 ### Basic Usage
 
-1. Visit GeohashViz.com in your browser
+1. Visit [GeohashViz](https://geohashviz.amarpandey.me) in your browser
 2. Enter geohashes in the input field (one per line or comma-separated)
 3. Click "Visualize" to see them on the map
 4. The map will automatically zoom to fit all geohashes
@@ -126,7 +126,7 @@ All commits are automatically validated with the pre-commit hooks to ensure code
 
 Found a bug? Have a suggestion? Feel free to:
 
-- [Open an issue](https://github.com/amarlearning/geohashviz.com/issues)
+- [Open an issue](https://github.com/amarlearning/geohashviz/issues)
 - [Tweet me](https://twitter.com/iamarpandey)
 
 ## License
