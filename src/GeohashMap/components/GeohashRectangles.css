@@ -1,42 +1,141 @@
-.custom-tooltip {
-  background: linear-gradient(
-    135deg,
-    var(--primary-color),
-    var(--secondary-color)
-  );
-  border: none;
-  color: white;
-  font-weight: 600;
-  padding: 8px 12px;
-  border-radius: 8px;
-  box-shadow: var(--shadow-lg);
-  font-size: 0.875rem;
-  backdrop-filter: blur(10px);
+/* Cell labels: printed tabs in overprint */
+.leaflet-tooltip.custom-tooltip {
+  padding: 1px 6px;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-s);
+  background: var(--color-paper-2);
+  color: var(--color-accent-ink);
+  font-family: var(--font-data);
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 4px 10px -6px var(--color-shadow);
+  transition: opacity var(--dur-2) var(--ease-out);
+  animation: label-in var(--dur-3) var(--ease-out) 380ms backwards;
 }
 
-.custom-tooltip:before {
-  border-top-color: var(--primary-color);
+.leaflet-tooltip.custom-tooltip::before {
+  display: none;
 }
 
-/* Enhanced geohash rectangle styling */
+.leaflet-tooltip.custom-tooltip.is-focus {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.leaflet-tooltip.custom-tooltip.is-dim {
+  opacity: 0.45 !important;
+}
+
 .geohash-rectangle {
-  stroke-width: 2;
-  stroke-opacity: 0.8;
-  fill-opacity: 0.3;
-  transition: all 0.2s ease;
-}
-
-.geohash-rectangle:hover {
-  stroke-width: 3;
-  stroke-opacity: 1;
-  fill-opacity: 0.5;
+  transition:
+    stroke-opacity var(--dur-2) var(--ease-out),
+    fill-opacity var(--dur-2) var(--ease-out),
+    stroke-width var(--dur-2) var(--ease-out);
 }
 
 .geohash-rectangle-clickable {
   cursor: pointer;
-  transition: opacity 0.2s ease;
 }
 
-.geohash-rectangle-clickable:hover {
-  opacity: 1 !important;
+/* Fresh cells: the outline traces, then the wash lands */
+.trace-in {
+  animation: trace var(--dur-4) var(--ease-in-out) both;
+}
+
+@keyframes trace {
+  from {
+    stroke-dashoffset: var(--len);
+    fill-opacity: 0;
+  }
+  70% {
+    fill-opacity: 0;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Neighbours: the 8 cells touching the pinned one, click to add */
+.neighbour-cell {
+  cursor: copy;
+  animation: neighbour-in var(--dur-3) var(--ease-out) both;
+  transition:
+    fill-opacity var(--dur-1) var(--ease-out),
+    stroke-opacity var(--dur-1) var(--ease-out);
+}
+
+.neighbour-cell:hover {
+  fill-opacity: 0.12;
+  stroke-opacity: 1;
+  stroke-width: 2;
+}
+
+.leaflet-tooltip.neighbour-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--color-accent-ink);
+  pointer-events: none;
+  animation: label-in var(--dur-3) var(--ease-out) 200ms backwards;
+}
+
+.leaflet-tooltip.neighbour-label::before {
+  display: none;
+}
+
+.leaflet-tooltip.neighbour-label.is-hover {
+  padding: 3px 7px;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-s);
+  background: var(--color-paper-2);
+  animation: none;
+}
+
+/* Suggestion labels: hollow tabs, unlike the filled labels of plotted cells */
+.neighbour-hash {
+  font-family: var(--font-data);
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--color-paper-2);
+  border: 1px dashed var(--color-accent);
+  padding: 0 4px;
+  border-radius: 2px;
+  opacity: 0.9;
+}
+
+.neighbour-add {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-accent-ink);
+}
+
+.prefix-preview {
+  pointer-events: none;
+  animation: preview-in var(--dur-2) var(--ease-out) both;
+}
+
+@keyframes label-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes neighbour-in {
+  from {
+    stroke-opacity: 0;
+    fill-opacity: 0;
+  }
+}
+
+@keyframes preview-in {
+  from {
+    stroke-opacity: 0;
+    fill-opacity: 0;
+  }
 }

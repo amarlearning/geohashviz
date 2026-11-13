@@ -1,89 +1,110 @@
 .status-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--background-overlay);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid var(--border-color);
-  padding: 12px 24px;
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 1000;
   display: flex;
   align-items: center;
-  gap: 24px;
-  z-index: 1000;
-  font-size: 0.875rem;
+  gap: var(--space-l);
+  min-height: 40px;
+  padding: 0 var(--space-m);
+  background: var(--color-paper-2);
+  border-top: 1px solid var(--color-rule-strong);
+  font-size: var(--text-sm);
+  overflow: hidden;
+  animation: strip-in var(--dur-3) var(--ease-out) 420ms both;
+}
+
+/* Plotting: a magenta scan crosses the strip */
+.status-bar::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 40%;
+  height: 2px;
+  background: var(--color-accent);
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.status-bar.is-loading::before {
+  opacity: 1;
+  animation: scan 700ms var(--ease-in-out) infinite;
 }
 
 .status-item {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  align-items: baseline;
+  gap: 6px;
+  white-space: nowrap;
 }
 
 .status-label {
-  color: var(--text-secondary);
-  font-weight: 500;
+  color: var(--color-muted);
 }
 
 .status-value {
-  color: var(--primary-color);
+  display: inline-block;
+  color: var(--color-ink);
   font-weight: 600;
-  background: rgba(99, 102, 241, 0.1);
-  padding: 2px 8px;
-  border-radius: 4px;
+  animation: count-flip var(--dur-2) var(--ease-spring) both;
 }
 
-.loading-spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--border-color);
-  border-top: 2px solid var(--primary-color);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+.status-item.is-ok .status-value {
+  color: var(--color-ok);
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+.status-item.is-warn .status-value {
+  color: var(--color-warn);
+}
+
+.status-item.is-error .status-value {
+  color: var(--color-error);
+}
+
+.status-keys {
+  margin-left: auto;
+  align-items: center;
 }
 
 .keyboard-shortcut {
-  background: var(--text-secondary);
-  color: white;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 0.75rem;
+  padding: 1px 6px;
+  border: 1px solid var(--color-rule-strong);
+  border-bottom-width: 2px;
+  border-radius: var(--radius-s);
+  background: var(--color-paper);
+  color: var(--color-ink-2);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
   font-weight: 500;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  box-shadow: none;
 }
 
-@media (max-width: 768px) {
-  .status-bar {
-    padding: 8px 16px;
-    gap: 12px;
-    font-size: 0.8rem;
-  }
+.status-keys .keyboard-shortcut + .status-label {
+  margin-right: var(--space-xs);
+}
 
-  .keyboard-shortcut {
-    display: none;
-  }
-
-  .status-item:last-child {
-    display: none;
+@keyframes strip-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
   }
 }
 
-@media (max-width: 480px) {
+@keyframes scan {
+  to {
+    transform: translateX(260%);
+  }
+}
+
+@media (max-width: 720px) {
   .status-bar {
-    padding: 6px 12px;
-    gap: 8px;
+    gap: var(--space-m);
   }
 
-  .status-label {
-    font-size: 0.75rem;
+  .status-keys {
+    display: none;
   }
 }

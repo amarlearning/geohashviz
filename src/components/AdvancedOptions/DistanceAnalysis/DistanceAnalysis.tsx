@@ -64,6 +64,7 @@ export const DistanceAnalysis: React.FC<DistanceAnalysisProps> = ({
           <input
             type="checkbox"
             checked={config.enabled}
+            aria-label="Show distances"
             onChange={handleToggle}
             disabled={disabled}
           />

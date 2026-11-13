@@ -1,0 +1,128 @@
+.nesting-demo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-m);
+  margin: 0;
+}
+
+.nesting-stage {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  aspect-ratio: 1;
+  overflow: visible;
+}
+
+.nesting-frame {
+  transform-box: view-box;
+  transform-origin: 0 0;
+  animation: nest-dive var(--dur-4) var(--ease-in-out) both;
+}
+
+.nesting-ground {
+  fill: var(--color-paper-2);
+}
+
+.nesting-lines {
+  stroke: var(--color-accent);
+  stroke-width: 1;
+  opacity: 0.4;
+  vector-effect: non-scaling-stroke;
+  animation: nest-fade var(--dur-3) var(--ease-out) 300ms both;
+}
+
+.nesting-border {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.nesting-cell {
+  fill: var(--color-accent);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: nest-pick var(--dur-3) var(--ease-spring) 700ms both;
+}
+
+.nesting-caption {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-s) var(--space-m);
+}
+
+.nesting-hash {
+  font-family: var(--font-data);
+  font-size: var(--text-xl);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.nesting-hash span {
+  transition: color var(--dur-2) var(--ease-out);
+}
+
+.nesting-hash .is-done {
+  color: var(--color-ink);
+}
+
+.nesting-hash .is-now {
+  color: var(--color-accent);
+}
+
+.nesting-hash .is-next {
+  color: var(--color-rule-strong);
+}
+
+.nesting-facts {
+  color: var(--color-ink-2);
+  font-size: var(--text-sm);
+  animation: nest-fade var(--dur-2) var(--ease-out) both;
+}
+
+.nesting-toggle {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin-left: auto;
+  padding: 0;
+  border: 1px solid var(--color-rule-strong);
+  border-radius: 50%;
+  background: var(--color-paper-2);
+  color: var(--color-ink-2);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-1) var(--ease-out),
+    color var(--dur-1) var(--ease-out),
+    transform var(--dur-1) var(--ease-out);
+}
+
+.nesting-toggle:hover {
+  border-color: var(--color-ink-2);
+  color: var(--color-ink);
+}
+
+.nesting-toggle:active {
+  transform: scale(0.92);
+}
+
+@keyframes nest-dive {
+  from {
+    transform: var(--from);
+  }
+}
+
+@keyframes nest-pick {
+  from {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+}
+
+@keyframes nest-fade {
+  from {
+    opacity: 0;
+  }
+}

@@ -1,155 +1,129 @@
 .distance-config {
-  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-m);
 }
 
 .distance-config-section {
-  margin-bottom: 16px;
-}
-
-.distance-config-section:last-child {
-  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .distance-config-label {
-  display: block;
-  font-size: 13px;
+  font-size: var(--text-xs);
   font-weight: 500;
-  color: #374151;
-  margin-bottom: 8px;
+  color: var(--color-ink-2);
 }
 
 .distance-config-select {
   width: 100%;
-  padding: 8px 12px;
-  font-size: 14px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  background-color: white;
-  color: #1f2937;
+  min-height: 38px;
+  padding: 0 32px 0 var(--space-s);
+  border: 1px solid var(--color-rule-strong);
+  border-radius: var(--radius-m);
+  background-color: var(--color-paper-2);
+  color: var(--color-ink);
+  font-size: var(--text-sm);
   cursor: pointer;
-  transition: border-color 0.2s;
+  transition:
+    border-color var(--dur-1) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
 }
 
 .distance-config-select:hover {
-  border-color: #9ca3af;
+  border-color: var(--color-ink-2);
 }
 
 .distance-config-select:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--color-water);
+  box-shadow: 0 0 0 3px var(--color-water-wash);
 }
 
-.distance-config-select:disabled {
-  background-color: #f3f4f6;
-  cursor: not-allowed;
-  opacity: 0.6;
+#reference-point {
+  font-family: var(--font-data);
 }
 
-.distance-config-info {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 10px 12px;
-  background-color: #eff6ff;
-  border: 1px solid #bfdbfe;
-  border-radius: 6px;
-  font-size: 13px;
-  color: #1e40af;
-  line-height: 1.5;
-}
-
-.distance-config-info-icon {
-  flex-shrink: 0;
-  margin-top: 2px;
-  color: #3b82f6;
-}
-
+.distance-config-info,
+.distance-config-tip,
 .distance-config-warning {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  padding: 10px 12px;
-  background-color: #fffbeb;
-  border: 1px solid #fde68a;
-  border-radius: 6px;
-  font-size: 13px;
-  color: #92400e;
-  line-height: 1.5;
+  gap: var(--space-xs);
+  font-size: var(--text-xs);
+  line-height: 1.45;
 }
 
-.distance-config-warning-icon {
-  flex-shrink: 0;
-  margin-top: 2px;
-  color: #f59e0b;
-}
-
-.distance-config-checkboxes {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.distance-config-checkbox-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.distance-config-checkbox {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-  accent-color: #3b82f6;
-}
-
-.distance-config-checkbox-label {
-  font-size: 14px;
-  color: #374151;
-  cursor: pointer;
-  user-select: none;
-}
-
-.distance-config-radio-group {
-  display: flex;
-  gap: 20px;
-}
-
-.distance-config-radio-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.distance-config-radio {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-  accent-color: #3b82f6;
-}
-
-.distance-config-radio-label {
-  font-size: 14px;
-  color: #374151;
-  cursor: pointer;
-  user-select: none;
+.distance-config-info {
+  padding: var(--space-xs) var(--space-s);
+  border-radius: var(--radius-m);
+  background: var(--color-water-wash);
+  color: var(--color-water-ink);
 }
 
 .distance-config-tip {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 10px 12px;
-  background-color: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  border-radius: 6px;
-  font-size: 13px;
-  color: #166534;
-  line-height: 1.5;
+  color: var(--color-muted);
 }
 
-.distance-config-tip-icon {
-  flex-shrink: 0;
-  margin-top: 2px;
-  color: #22c55e;
+.distance-config-warning {
+  padding: var(--space-xs) var(--space-s);
+  border-radius: var(--radius-m);
+  background: var(--color-warn-wash);
+  color: var(--color-warn);
+}
+
+.distance-config-info-icon,
+.distance-config-tip-icon,
+.distance-config-warning-icon {
+  flex: none;
+  margin-top: 1px;
+}
+
+/* Units: a two-way segmented control built on real radios */
+.distance-config-radio-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 3px;
+  border-radius: var(--radius-m);
+  background: var(--color-paper-3);
+}
+
+.distance-config-radio-wrapper {
+  position: relative;
+}
+
+.distance-config-radio {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.distance-config-radio-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  border-radius: 4px;
+  color: var(--color-ink-2);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-2) var(--ease-out),
+    color var(--dur-1) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+
+.distance-config-radio:checked + .distance-config-radio-label {
+  background: var(--color-paper-2);
+  color: var(--color-ink);
+  box-shadow: 0 1px 3px var(--color-shadow);
+}
+
+.distance-config-radio:focus-visible + .distance-config-radio-label {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 1px;
 }

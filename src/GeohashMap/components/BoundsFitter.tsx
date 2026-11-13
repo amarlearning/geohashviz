@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useMap } from "react-leaflet";
 import { LatLngBounds } from "leaflet";
 import Geohash from "../model/Geohash";
+import { glideToBounds } from "../config/styleConfig";
 
 const BoundsFitter: React.FC<{ geohashes: Geohash[] }> = ({ geohashes }) => {
   const map = useMap();
@@ -14,10 +15,8 @@ const BoundsFitter: React.FC<{ geohashes: Geohash[] }> = ({ geohashes }) => {
         bounds.extend(geohash.boundingBox[1]);
       });
 
-      map.fitBounds(bounds, {
-        padding: [50, 50],
-        maxZoom: 15,
-      });
+      // Glide from wherever the map is to the plotted cells
+      glideToBounds(map, bounds, { padding: [60, 60], maxZoom: 15 }, 1.2);
     }
   }, [map, geohashes]);
 

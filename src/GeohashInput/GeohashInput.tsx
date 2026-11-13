@@ -1,8 +1,6 @@
-// FormComponent.tsx
-import React, { useState } from "react";
+import React from "react";
 import "./GeohashInput.css";
 import QuickActions from "../components/QuickActions";
-import CustomZoomControls from "../components/CustomZoomControls";
 import Geohash from "../GeohashMap/model/Geohash";
 import { DistanceConfig } from "../components/AdvancedOptions/DistanceAnalysis/utils/distanceTypes";
 import AdvancedOptions from "../components/AdvancedOptions/AdvancedOptions";
@@ -11,30 +9,30 @@ import ErrorBoundary from "../components/AdvancedOptions/DistanceAnalysis/ErrorB
 
 interface FormComponentProps {
   onSubmit: (value: string) => void;
-  defaultGeohashStr: string;
-  onZoomIn?: () => void;
-  onZoomOut?: () => void;
-  onFitBounds?: () => void;
+  /** Textarea contents, owned by the page so the map can append to it */
+  value: string;
+  onValueChange: (value: string) => void;
   advancedOptionsExpanded: boolean;
   onAdvancedOptionsToggle: () => void;
   distanceConfig: DistanceConfig;
   onDistanceConfigChange: (config: DistanceConfig) => void;
   validGeohashes: Geohash[];
+  /** Rendered between the input and the advanced options: the cell index */
+  children?: React.ReactNode;
 }
 
 const GeohashInput: React.FC<FormComponentProps> = ({
   onSubmit,
-  defaultGeohashStr,
-  onZoomIn,
-  onZoomOut,
-  onFitBounds,
+  value,
+  onValueChange,
   advancedOptionsExpanded,
   onAdvancedOptionsToggle,
   distanceConfig,
   onDistanceConfigChange,
   validGeohashes,
+  children,
 }) => {
-  const [value, setValue] = useState(defaultGeohashStr);
+  const setValue = onValueChange;
 
   const handleClear = () => {
     setValue("");
@@ -47,41 +45,51 @@ const GeohashInput: React.FC<FormComponentProps> = ({
     onSubmit(sampleGeohashes);
   };
 
+  const submit = () => onSubmit(value);
+
   return (
-    <div className="geohash-form-container">
+    <aside className="geohash-form-container" aria-label="Geohash input">
       <div className="geohash-form-header">
-        <h3 className="geohash-form-title">Geohash Input</h3>
+        <h1 className="geohash-form-title">Plot geohashes</h1>
         <p className="geohash-form-description">
-          Enter geohashes (one per line)
+          One per line. Each becomes a cell on the map.
         </p>
       </div>
 
       <textarea
-        rows={6}
-        className="form-control geohash-textarea"
-        placeholder="gct&#10;gcp&#10;gcr&#10;..."
+        id="geohash-input"
+        rows={5}
+        className="geohash-textarea"
+        placeholder={"gcpvj\ngcpvh\ngcpuv"}
         aria-label="Geohash input textarea"
+        spellCheck={false}
+        autoCapitalize="off"
+        autoComplete="off"
         onChange={(e) => setValue(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+            e.preventDefault();
+            submit();
+          }
+        }}
         value={value}
       />
 
-      <button
-        type="button"
-        className="btn btn-primary geohash-submit-button"
-        onClick={() => onSubmit(value)}
-      >
-        🗺️ Visualize Geohashes
-      </button>
+      <div className="geohash-form-actions">
+        <button
+          type="button"
+          className="btn-primary-gh geohash-submit-button"
+          onClick={submit}
+        >
+          Plot cells
+          <kbd className="geohash-submit-kbd" aria-hidden="true">
+            ⌘↵
+          </kbd>
+        </button>
+        <QuickActions onClear={handleClear} onSample={handleSample} />
+      </div>
 
-      <QuickActions onClear={handleClear} onSample={handleSample} />
-
-      {onZoomIn && onZoomOut && onFitBounds && (
-        <CustomZoomControls
-          onZoomIn={onZoomIn}
-          onZoomOut={onZoomOut}
-          onFitBounds={onFitBounds}
-        />
-      )}
+      {children}
 
       <AdvancedOptions
         expanded={advancedOptionsExpanded}
@@ -101,7 +109,7 @@ const GeohashInput: React.FC<FormComponentProps> = ({
           />
         </ErrorBoundary>
       </AdvancedOptions>
-    </div>
+    </aside>
   );
 };
 

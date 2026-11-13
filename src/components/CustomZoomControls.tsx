@@ -14,29 +14,70 @@ const CustomZoomControls: React.FC<CustomZoomControlsProps> = ({
 }) => {
   return (
     <div className="custom-zoom-controls">
-      <button className="zoom-btn zoom-in" onClick={onZoomIn} title="Zoom in">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+      <button
+        type="button"
+        className="zoom-btn zoom-in"
+        onClick={onZoomIn}
+        title="Zoom in"
+        aria-label="Zoom in"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M8 3v10M3 8h10" />
         </svg>
       </button>
 
       <button
+        type="button"
         className="zoom-btn zoom-out"
         onClick={onZoomOut}
         title="Zoom out"
+        aria-label="Zoom out"
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M19 13H5v-2h14v2z" />
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M3 8h10" />
         </svg>
       </button>
 
       <button
+        type="button"
         className="zoom-btn zoom-fit"
         onClick={onFitBounds}
-        title="Fit all geohashes (Shift + F)"
+        title="Fit all cells (Shift + F)"
+        aria-label="Fit all cells"
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M9 9H4v6h5V9zm10 0h-5v6h5V9zM6 7h12v2H6V7zm0 8h12v2H6v-2z" />
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M2 5.5V2h3.5M10.5 2H14v3.5M14 10.5V14h-3.5M5.5 14H2v-3.5" />
+          <rect x="6" y="6" width="4" height="4" />
         </svg>
       </button>
     </div>

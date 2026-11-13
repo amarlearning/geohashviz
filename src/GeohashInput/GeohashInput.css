@@ -1,136 +1,141 @@
 .geohash-form-container {
-  width: 320px;
-  z-index: 1000;
-  position: fixed;
-  top: 80px;
-  left: 24px;
-  background: var(--background-overlay);
-  backdrop-filter: blur(10px);
-  padding: 24px;
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border-color);
-  transition: all 0.3s ease;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-l);
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-l);
+  background: var(--color-paper-2);
+  border-right: 1px solid var(--color-rule);
+  scrollbar-width: thin;
+  animation: panel-in var(--dur-3) var(--ease-out) 80ms both;
 }
 
-.geohash-form-container:hover {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+.geohash-form-container > * {
+  animation: panel-item-in var(--dur-3) var(--ease-out) both;
+}
+
+.geohash-form-container > :nth-child(2) {
+  animation-delay: 140ms;
+}
+.geohash-form-container > :nth-child(3) {
+  animation-delay: 200ms;
+}
+.geohash-form-container > :nth-child(4) {
+  animation-delay: 260ms;
+}
+.geohash-form-container > :nth-child(5) {
+  animation-delay: 320ms;
 }
 
 .geohash-form-header {
-  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .geohash-form-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0 0 4px 0;
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 650;
+  font-stretch: 108%;
+  color: var(--color-ink);
 }
 
 .geohash-form-description {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
   margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-muted);
 }
 
 .geohash-textarea {
-  border-radius: 8px !important;
-  border: 2px solid var(--border-color) !important;
-  background-color: white !important;
-  font-size: 14px;
-  font-family:
-    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New",
-    monospace;
+  display: block;
+  width: 100%;
+  min-height: 116px;
+  margin-top: calc(var(--space-s) * -1);
+  padding: var(--space-s);
   resize: vertical;
-  min-height: 120px;
-  padding: 12px !important;
-  transition: all 0.2s ease;
+  border: 1px solid var(--color-rule-strong);
+  border-radius: var(--radius-m);
+  background-color: var(--color-paper-2);
+  color: var(--color-ink);
+  font-family: var(--font-data);
+  font-size: 0.875rem;
   line-height: 1.5;
+  transition:
+    border-color var(--dur-1) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+
+.geohash-textarea:hover {
+  border-color: var(--color-ink-2);
 }
 
 .geohash-textarea:focus {
-  border-color: var(--primary-color) !important;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
-  outline: none !important;
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-wash-2);
+}
+
+.geohash-textarea:focus-visible {
+  outline: none;
 }
 
 .geohash-textarea::placeholder {
-  color: var(--text-secondary);
-  font-style: italic;
+  color: var(--color-muted);
+  opacity: 0.8;
+}
+
+.geohash-form-actions {
+  display: flex;
+  gap: var(--space-xs);
+  margin-top: calc(var(--space-s) * -1);
 }
 
 .geohash-submit-button {
-  margin-top: 16px;
-  width: 100%;
-  border-radius: 8px !important;
-  background: linear-gradient(
-    135deg,
-    var(--primary-color),
-    var(--secondary-color)
-  ) !important;
-  border: none !important;
-  padding: 12px 24px;
-  font-weight: 600;
-  font-size: 0.875rem;
-  letter-spacing: 0.025em;
-  transition: all 0.2s ease;
-  position: relative;
-  overflow: hidden;
+  flex: 1;
 }
 
-.geohash-submit-button:hover {
-  background: linear-gradient(135deg, var(--primary-hover), #7c3aed) !important;
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+.geohash-submit-kbd {
+  padding: 1px 5px;
+  border-radius: var(--radius-s);
+  background: var(--color-on-accent-wash);
+  color: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  box-shadow: none;
 }
 
-.geohash-submit-button:active {
-  transform: translateY(0);
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
 }
 
-.geohash-count {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  margin-top: 8px;
-  text-align: center;
+@keyframes panel-item-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
 }
 
-/* Mobile responsive */
-@media (max-width: 768px) {
+@media (max-width: 720px) {
   .geohash-form-container {
-    width: calc(100vw - 32px);
-    left: 16px;
-    right: 16px;
-    top: 70px;
-    padding: 16px;
-  }
-
-  .geohash-form-title {
-    font-size: 1rem;
-  }
-
-  .geohash-form-description {
-    font-size: 0.8rem;
+    max-height: 46vh;
+    padding: var(--space-m);
+    gap: var(--space-m);
+    border-right: 0;
+    border-bottom: 1px solid var(--color-rule);
   }
 
   .geohash-textarea {
-    min-height: 80px;
-    font-size: 13px;
+    min-height: 84px;
   }
 
-  .geohash-submit-button {
-    padding: 10px 20px;
-    font-size: 0.8rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .geohash-form-container {
-    width: calc(100vw - 24px);
-    left: 12px;
-    right: 12px;
-    top: 55px;
-    padding: 12px;
+  .geohash-submit-kbd {
+    display: none;
   }
 }

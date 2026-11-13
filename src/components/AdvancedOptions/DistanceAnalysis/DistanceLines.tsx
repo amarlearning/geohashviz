@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import { Polyline, Tooltip } from "react-leaflet";
 import Geohash from "../../../GeohashMap/model/Geohash";
 import {
@@ -8,6 +8,11 @@ import {
 } from "./utils/distanceTypes";
 import { calculateCentroid, formatDistance } from "./utils/distanceCalculator";
 import "./DistanceLines.css";
+import {
+  DISTANCE_LINE_COLOR,
+  HIGHLIGHT_COLOR,
+  traceIn,
+} from "../../../GeohashMap/config/styleConfig";
 
 /**
  * Props for DistanceLines component
@@ -128,6 +133,9 @@ const DistanceLines: React.FC<DistanceLinesProps> = ({
   onLineClick,
 }) => {
   // Memoize line generation to prevent unnecessary re-renders
+  // Trace a line only the first time its pair appears, not on every highlight
+  const traced = useRef(new Set<string>());
+
   const lines = useMemo(() => {
     // Only render lines if there are distances to display
     if (distances.length === 0) {
@@ -135,7 +143,7 @@ const DistanceLines: React.FC<DistanceLinesProps> = ({
     }
 
     // Map over distances array to create Polyline components
-    return distances.map(({ from, to, distance }) => {
+    return distances.map(({ from, to, distance }, index) => {
       // Calculate centroids for from and to geohashes
       const fromCentroid = calculateCentroid(from.boundingBox);
       const toCentroid = calculateCentroid(to.boundingBox);
@@ -168,9 +176,10 @@ const DistanceLines: React.FC<DistanceLinesProps> = ({
       const key = `${from.geohash}-${to.geohash}${highlightKey}`;
 
       // Dynamic styling based on highlight state
-      const lineColor = highlighted ? "#10B981" : "#FF6B35";
-      const lineWeight = highlighted ? 5 : 3;
+      const lineColor = highlighted ? HIGHLIGHT_COLOR : DISTANCE_LINE_COLOR;
+      const lineWeight = highlighted ? 4 : 2;
       const lineOpacity = dimmed ? 0.2 : highlighted ? 1 : 0.85;
+      const pairKey = `${config.mode}:${from.geohash}-${to.geohash}`;
 
       // Render Polyline with curved path, enhanced styling, and distance label
       return (
@@ -182,6 +191,15 @@ const DistanceLines: React.FC<DistanceLinesProps> = ({
           opacity={lineOpacity}
           smoothFactor={1}
           eventHandlers={{
+            add: (e) => {
+              if (traced.current.has(pairKey)) return;
+              traced.current.add(pairKey);
+              traceIn(
+                e.target.getElement?.(),
+                400 + Math.min(index, 30) * 40,
+                "trace-line"
+              );
+            },
             click: () => {
               if (onLineClick) {
                 onLineClick(from.geohash, to.geohash);
@@ -202,13 +220,13 @@ const DistanceLines: React.FC<DistanceLinesProps> = ({
             className={`distance-label ${highlighted ? "distance-label-highlighted" : dimmed ? "distance-label-dimmed" : ""}`}
           >
             {highlighted
-              ? `${from.geohash} ↔ ${to.geohash}: ${distanceText}`
+              ? `${from.geohash} to ${to.geohash}: ${distanceText}`
               : distanceText}
           </Tooltip>
         </Polyline>
       );
     });
-  }, [distances, highlightState, onLineClick, config.units]);
+  }, [distances, highlightState, onLineClick, config.units, config.mode]);
 
   return <>{lines}</>;
 };

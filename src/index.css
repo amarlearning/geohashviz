@@ -1,31 +1,263 @@
+/* Hallmark · shape: survey workbench · genre: modern-minimal · theme: custom (impeccable national grid, seed:135d1812f7bf0ea5) · job: try · idea: "every geohash is a grid square you can see nest" · vibe: "survey sheet, magenta overprint, precise, calm"
+ * paper: oklch(0.97 0.004 120) · accent: oklch(0.47 0.17 350) · display: Archivo · body: Archivo · hero: the map plate itself, cells printed in overprint · nav: edge-aligned bar, wordmark and three links · footer: none on the tool, ruled strip on reading pages · imagery: the product (live map) · signature: the precision ladder, each character drawn as the square it picks
+ * axes: survey-paper/grotesk/overprint-magenta · posture: tool-first · contrast: pass · fold: pass · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H4 E4 S5 R4 V4 · weakest: P, blog and about keep their old structure; restyled through tokens instead of rebuilt */
+
 :root {
-  --distance-reference-color: #10b981;
-  --distance-line-color: #3388ff;
-  --distance-info-color: #3b82f6;
-  --distance-warning-color: #f59e0b;
-  --distance-error-color: #ef4444;
+  /* Paper and ink */
+  --color-paper: #f4f5f1;
+  --color-paper-2: #ffffff;
+  --color-paper-3: #eceee7;
+  --color-ink: #1c1f24;
+  --color-ink-2: #474c54;
+  --color-muted: #686d74;
+  --color-rule: #d8dad2;
+  --color-rule-strong: #b4b8ad;
+
+  /* Overprint magenta: grid, cells, the one action colour */
+  --color-accent: #b0237a;
+  --color-accent-ink: #8c1b61;
+  --color-accent-hover: #961d68;
+  --color-accent-wash: rgba(176, 35, 122, 0.09);
+  --color-accent-wash-2: rgba(176, 35, 122, 0.18);
+  --color-on-accent: #ffffff;
+  --color-on-accent-wash: rgba(255, 255, 255, 0.18);
+
+  /* Survey blue: reference, highlight, distance */
+  --color-water: #1f66a8;
+  --color-water-ink: #17507f;
+  --color-water-wash: rgba(31, 102, 168, 0.1);
+
+  /* States */
+  --color-ok: #2c7a4b;
+  --color-ok-wash: rgba(44, 122, 75, 0.09);
+  --color-warn: #9a5b00;
+  --color-warn-wash: rgba(154, 91, 0, 0.1);
+  --color-error: #b3261e;
+  --color-error-wash: rgba(179, 38, 30, 0.08);
+  --color-focus: #1f66a8;
+  --color-shadow: rgba(28, 31, 36, 0.12);
+  --color-scrim: rgba(28, 31, 36, 0.04);
+
+  /* Type */
+  --font-body:
+    "Archivo", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-data: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+  --text-2xl: clamp(2rem, 1.4rem + 2.4vw, 3.25rem);
+
+  /* Space and shape */
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-s: 12px;
+  --space-m: 16px;
+  --space-l: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 72px;
+  --radius-s: 3px;
+  --radius-m: 6px;
+  --container: 1120px;
+  --gutter: 32px;
+  --bar-h: 56px;
+  --panel-w: 360px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --dur-1: 140ms;
+  --dur-2: 280ms;
+  --dur-3: 560ms;
+  --dur-4: 900ms;
+
+  /* Legacy names kept for components that still read them */
+  --distance-reference-color: var(--color-water);
+  --distance-line-color: var(--color-water);
+  --distance-info-color: var(--color-water);
+  --distance-warning-color: var(--color-warn);
+  --distance-error-color: var(--color-error);
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+html {
+  scrollbar-color: var(--color-rule-strong) var(--color-paper);
 }
 
 #root {
-  height: 100vh;
+  min-height: 100vh;
 }
 
 body {
   margin: 0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
-    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  caret-color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
 }
 
-code {
-  font-family:
-    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+::selection {
+  background: var(--color-accent-wash-2);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-synthesis: none;
+  overflow-wrap: break-word;
+  min-width: 0;
+  text-wrap: balance;
+  letter-spacing: -0.01em;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family: var(--font-data);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Reading pages: one capped container, gutters grow at wide sizes */
+.page-container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+@media (max-width: 720px) {
+  :root {
+    --gutter: 16px;
+  }
+}
+
+/* Shared button vocabulary: one primary, one quiet */
+.btn-primary-gh,
+.btn-quiet {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  min-height: 40px;
+  padding: 0 var(--space-m);
+  border-radius: var(--radius-m);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-1) var(--ease-out),
+    border-color var(--dur-1) var(--ease-out),
+    color var(--dur-1) var(--ease-out),
+    transform var(--dur-1) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+
+.btn-primary-gh,
+.btn-primary-gh:hover {
+  color: var(--color-on-accent);
+}
+
+.btn-quiet:hover {
+  color: var(--color-ink);
+}
+
+.btn-primary-gh {
+  background: var(--color-accent);
+  border: 1px solid var(--color-accent);
+}
+
+.btn-primary-gh:hover {
+  background: var(--color-accent-hover);
+  box-shadow: 0 6px 16px -8px var(--color-accent);
+}
+
+.btn-quiet {
+  background: var(--color-paper-2);
+  color: var(--color-ink);
+  border: 1px solid var(--color-rule-strong);
+}
+
+.btn-quiet:hover {
+  border-color: var(--color-ink-2);
+  background: var(--color-paper);
+}
+
+.btn-primary-gh:active,
+.btn-quiet:active {
+  transform: scale(0.97);
+}
+
+.btn-primary-gh:disabled,
+.btn-quiet:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

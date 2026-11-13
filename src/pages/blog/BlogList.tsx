@@ -1,6 +1,34 @@
-import { Container, Row, Col, Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import SiteFooter from "../../components/SiteFooter/SiteFooter";
 import "./Blog.css";
+
+/** An 8 by 4 grid with one square picked: each post gets its own square */
+const IndexMark = ({ index }: { index: number }) => {
+  const col = (index * 3 + 1) % 8;
+  const row = (index * 5 + 2) % 4;
+  return (
+    <svg
+      className="index-mark"
+      width="49"
+      height="25"
+      viewBox="-0.5 -0.5 49 25"
+      aria-hidden="true"
+    >
+      <rect className="index-mark-frame" width="48" height="24" />
+      <path
+        className="index-mark-lines"
+        d="M6 0v24M12 0v24M18 0v24M24 0v24M30 0v24M36 0v24M42 0v24M0 6h48M0 12h48M0 18h48"
+      />
+      <rect
+        className="index-mark-cell"
+        x={col * 6}
+        y={row * 6}
+        width="6"
+        height="6"
+      />
+    </svg>
+  );
+};
 
 const BlogList = () => {
   const blogPosts = [
@@ -60,121 +88,56 @@ const BlogList = () => {
     },
   ];
 
-  // Separate feature posts from other posts
-  const featurePosts = blogPosts.filter((post) => post.category === "Features");
-  const otherPosts = blogPosts.filter((post) => post.category !== "Features");
+  const [lead, ...rest] = [
+    ...blogPosts.filter((post) => post.category === "Features"),
+    ...blogPosts.filter((post) => post.category !== "Features"),
+  ];
 
   return (
     <div className="blog-page">
-      {/* Hero Section */}
-      <section className="blog-hero">
-        <Container>
-          <Row className="justify-content-center text-center">
-            <Col lg={8}>
-              <h1 className="blog-hero-title">Knowledge Base</h1>
-              <p className="blog-hero-subtitle">
-                Learn everything about geohashes, location encoding, and spatial
-                data visualization
-              </p>
-            </Col>
-          </Row>
-        </Container>
-      </section>
+      <header className="blog-index-head">
+        <div className="page-container">
+          <h1 className="blog-index-title">Field notes on geohashing</h1>
+          <p className="blog-index-lede">
+            {blogPosts.length} guides to geohashes, location encoding and the
+            spatial queries built on them.
+          </p>
+        </div>
+      </header>
 
-      {/* Feature Posts Section */}
-      {featurePosts.length > 0 && (
-        <Container className="blog-content">
-          <Row className="mb-5">
-            <Col>
-              <div className="section-header">
-                <h2 className="section-title">Latest Features</h2>
-                <p className="section-subtitle">
-                  Discover new capabilities and enhancements in GeohashViz
-                </p>
-              </div>
-            </Col>
-          </Row>
-          <Row className="g-4 mb-5">
-            {featurePosts.map((post) => (
-              <Col md={6} key={post.slug}>
-                <Card className="blog-card h-100">
-                  <Card.Body className="d-flex flex-column">
-                    <div className="blog-meta">
-                      <span className="blog-category">{post.category}</span>
-                      <span className="blog-date">{post.date}</span>
-                    </div>
-                    <Card.Title className="blog-title">
-                      <Link to={`/blogs/${post.slug}`} className="blog-link">
-                        {post.title}
-                      </Link>
-                    </Card.Title>
-                    <Card.Text className="blog-excerpt">
-                      {post.excerpt}
-                    </Card.Text>
-                    <div className="mt-auto">
-                      <div className="blog-footer">
-                        <span className="read-time">{post.readTime}</span>
-                        <Link
-                          to={`/blogs/${post.slug}`}
-                          className="read-more-btn"
-                        >
-                          Read More →
-                        </Link>
-                      </div>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        </Container>
-      )}
+      <div className="page-container blog-index">
+        <Link to={`/blogs/${lead.slug}`} className="blog-lead">
+          <span className="blog-lead-meta">
+            <span className="blog-tag">Latest feature</span>
+            <span>{lead.date}</span>
+            <span>{lead.readTime}</span>
+          </span>
+          <span className="blog-lead-title">{lead.title}</span>
+          <span className="blog-lead-excerpt">{lead.excerpt}</span>
+          <span className="blog-lead-cta">Read the article</span>
+        </Link>
 
-      {/* Other Blog Posts */}
-      <Container className="blog-content">
-        <Row className="mb-4">
-          <Col>
-            <div className="section-header">
-              <h2 className="section-title">Knowledge Base</h2>
-              <p className="section-subtitle">
-                Learn about geohashes, spatial data, and location-based
-                technologies
-              </p>
-            </div>
-          </Col>
-        </Row>
-        <Row className="g-4">
-          {otherPosts.map((post) => (
-            <Col md={6} key={post.slug}>
-              <Card className="blog-card h-100">
-                <Card.Body className="d-flex flex-column">
-                  <div className="blog-meta">
-                    <span className="blog-category">{post.category}</span>
-                    <span className="blog-date">{post.date}</span>
-                  </div>
-                  <Card.Title className="blog-title">
-                    <Link to={`/blogs/${post.slug}`} className="blog-link">
-                      {post.title}
-                    </Link>
-                  </Card.Title>
-                  <Card.Text className="blog-excerpt">{post.excerpt}</Card.Text>
-                  <div className="mt-auto">
-                    <div className="blog-footer">
-                      <span className="read-time">{post.readTime}</span>
-                      <Link
-                        to={`/blogs/${post.slug}`}
-                        className="read-more-btn"
-                      >
-                        Read More →
-                      </Link>
-                    </div>
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
+        <h2 className="blog-index-heading">All guides</h2>
+        <ol className="blog-rows">
+          {rest.map((post, i) => (
+            <li key={post.slug} style={{ animationDelay: `${i * 70}ms` }}>
+              <Link to={`/blogs/${post.slug}`} className="blog-row">
+                <IndexMark index={i} />
+                <span className="blog-row-main">
+                  <span className="blog-row-title">{post.title}</span>
+                  <span className="blog-row-excerpt">{post.excerpt}</span>
+                </span>
+                <span className="blog-row-meta">
+                  <span className="blog-tag">{post.category}</span>
+                  <span>{post.readTime}</span>
+                </span>
+              </Link>
+            </li>
           ))}
-        </Row>
-      </Container>
+        </ol>
+      </div>
+
+      <SiteFooter />
     </div>
   );
 };

@@ -1,13 +1,13 @@
 import "../App.css";
-import "leaflet/dist/leaflet.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 
-import GeohashMap from "../GeohashMap/GeohashMap";
+import GeohashMap, { GeohashMapRef } from "../GeohashMap/GeohashMap";
 import Geohash from "../GeohashMap/model/Geohash";
 import { createGeohashObjects } from "../Algorithms/geohash";
 import GeohashInput from "../GeohashInput/GeohashInput";
 import StatusBar from "../components/StatusBar";
+import CustomZoomControls from "../components/CustomZoomControls";
+import CellIndex from "../components/CellIndex/CellIndex";
 import {
   DistanceConfig,
   HighlightState,
@@ -40,7 +40,7 @@ function Home() {
   };
 
   const [isLoading, setIsLoading] = useState(false);
-  const mapRef = useRef<any>(null);
+  const mapRef = useRef<GeohashMapRef>(null);
 
   // Initialize geohashes state first (needed by other hooks)
   const [geohashes, setGeohashes] = useState(() => {
@@ -54,6 +54,23 @@ function Home() {
     const result = createGeohashObjects(inputGeohashes);
     return result.all;
   });
+
+  // Textarea contents live here so a map click can add a neighbour
+  const [inputText, setInputText] = useState(defaultGeohashStr);
+
+  // Precision ladder: a hovered cell previews, a clicked one stays pinned
+  const [hoveredHash, setHoveredHash] = useState<string | null>(null);
+  const [pinnedHash, setPinnedHash] = useState<string | null>(null);
+  const [previewPrefix, setPreviewPrefix] = useState<string | null>(null);
+  const focusedHash = hoveredHash ?? pinnedHash;
+
+  const handlePin = useCallback((geohash: string) => {
+    setPinnedHash((current) => (current === geohash ? null : geohash));
+  }, []);
+
+  const handleFlyToPrefix = useCallback((prefix: string) => {
+    mapRef.current?.flyToGeohash(prefix);
+  }, []);
 
   // Distance analysis state
   const [distanceConfig, setDistanceConfig] = useState<DistanceConfig>({
@@ -132,9 +149,14 @@ function Home() {
     }
   }, [geohashes, distanceConfig]);
 
-  // Clear distance cache when geohashes change
+  // Clear distance cache and any pinned cell when geohashes change
   useEffect(() => {
     clearDistanceCache();
+    setPinnedHash((current) =>
+      current && geohashes.some((g) => g.geohash === current) ? current : null
+    );
+    setHoveredHash(null);
+    setPreviewPrefix(null);
   }, [geohashes]);
 
   // Clear highlight state when distance config is disabled or geohashes change
@@ -248,6 +270,15 @@ function Home() {
     return result.valid; // Return only valid geohashes for map
   };
 
+  // Add a neighbour from the map: append it to the list and replot
+  const handleAddGeohash = (geohash: string) => {
+    const next = inputText.trim() ? `${inputText.trim()}\n${geohash}` : geohash;
+    setInputText(next);
+    setGeohashes(handleSubmit(next));
+    // Close the suggestions so the map shows only what is plotted
+    setPinnedHash(null);
+  };
+
   // Update URL when geohashes change
   useEffect(() => {
     if (geohashes.length > 0) {
@@ -267,7 +298,10 @@ function Home() {
         }
       }
 
-      // ESC: Clear highlights
+      // ESC: Clear highlights, then the pinned cell
+      if (event.key === "Escape" && pinnedHash) {
+        setPinnedHash(null);
+      }
       if (event.key === "Escape") {
         if (
           highlightState.highlightedGeohash ||
@@ -284,16 +318,23 @@ function Home() {
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [geohashes, highlightState]);
+  }, [geohashes, highlightState, pinnedHash]);
+
+  const highlightLabel = highlightState.highlightedGeohash ? (
+    <strong>{highlightState.highlightedGeohash}</strong>
+  ) : highlightState.highlightedLine ? (
+    <>
+      <strong>{highlightState.highlightedLine.from}</strong> to{" "}
+      <strong>{highlightState.highlightedLine.to}</strong>
+    </>
+  ) : null;
 
   return (
-    <>
+    <div className="workspace">
       <GeohashInput
         onSubmit={(value) => setGeohashes(handleSubmit(value))}
-        defaultGeohashStr={defaultGeohashStr}
-        onZoomIn={handleZoomIn}
-        onZoomOut={handleZoomOut}
-        onFitBounds={handleFitBounds}
+        value={inputText}
+        onValueChange={setInputText}
         advancedOptionsExpanded={advancedOptionsExpanded}
         onAdvancedOptionsToggle={() =>
           setAdvancedOptionsExpanded(!advancedOptionsExpanded)
@@ -301,18 +342,26 @@ function Home() {
         distanceConfig={distanceConfig}
         onDistanceConfigChange={handleDistanceConfigChange}
         validGeohashes={geohashes}
-      />
-      {/* Highlight indicator */}
-      {distanceConfig.enabled &&
-        (highlightState.highlightedGeohash ||
-          highlightState.highlightedLine) && (
+      >
+        <CellIndex
+          geohashes={geohashes}
+          activeHash={focusedHash}
+          pinnedHash={pinnedHash}
+          onHover={setHoveredHash}
+          onPin={handlePin}
+          onPreviewPrefix={setPreviewPrefix}
+          onFlyToPrefix={handleFlyToPrefix}
+        />
+      </GeohashInput>
+
+      <div className="map-stage">
+        {distanceConfig.enabled && highlightLabel && (
           <div className="highlight-indicator">
             <span className="highlight-indicator-text">
-              {highlightState.highlightedGeohash
-                ? `Highlighting: ${highlightState.highlightedGeohash}`
-                : `Highlighting: ${highlightState.highlightedLine?.from} ↔ ${highlightState.highlightedLine?.to}`}
+              Highlighting {highlightLabel}
             </span>
             <button
+              type="button"
               className="highlight-clear-btn"
               onClick={() =>
                 setHighlightState({
@@ -322,21 +371,45 @@ function Home() {
               }
               aria-label="Clear highlight"
             >
-              ✕
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                aria-hidden="true"
+              >
+                <path d="M2.5 2.5l7 7M9.5 2.5l-7 7" />
+              </svg>
             </button>
           </div>
         )}
-      <GeohashMap
-        geohashes={geohashes}
-        ref={mapRef}
-        distanceConfig={distanceConfig}
-        distances={distances}
-        highlightState={highlightState}
-        onGeohashClick={handleGeohashClick}
-        onLineClick={handleLineClick}
-      />
-      <StatusBar geohashes={allGeohashes} isLoading={isLoading} />
-    </>
+        <GeohashMap
+          geohashes={geohashes}
+          ref={mapRef}
+          distanceConfig={distanceConfig}
+          distances={distances}
+          highlightState={highlightState}
+          onGeohashClick={handleGeohashClick}
+          onLineClick={handleLineClick}
+          focusedGeohash={focusedHash}
+          pinnedGeohash={pinnedHash}
+          previewPrefix={previewPrefix}
+          onAddGeohash={handleAddGeohash}
+          onDismissNeighbours={() => setPinnedHash(null)}
+          onCellHover={setHoveredHash}
+          onCellPin={handlePin}
+        />
+        <CustomZoomControls
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+          onFitBounds={handleFitBounds}
+        />
+        <StatusBar geohashes={allGeohashes} isLoading={isLoading} />
+      </div>
+    </div>
   );
 }
 

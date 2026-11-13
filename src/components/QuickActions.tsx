@@ -15,28 +15,31 @@ const QuickActions: React.FC<QuickActionsProps> = ({
   return (
     <div className="quick-actions">
       <button
-        className="quick-action-btn sample-btn"
+        className="btn-quiet quick-action-btn sample-btn"
+        type="button"
         onClick={onSample}
         title="Load sample geohashes"
       >
-        📍 Sample
+        Sample
       </button>
 
       <button
-        className="quick-action-btn clear-btn"
+        className="btn-quiet quick-action-btn clear-btn"
+        type="button"
         onClick={onClear}
         title="Clear all geohashes"
       >
-        🗑️ Clear
+        Clear
       </button>
 
       {onExport && (
         <button
-          className="quick-action-btn export-btn"
+          className="btn-quiet quick-action-btn export-btn"
+          type="button"
           onClick={onExport}
           title="Export geohashes"
         >
-          📤 Export
+          Export
         </button>
       )}
     </div>

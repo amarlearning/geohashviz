@@ -30,50 +30,57 @@ const StatusBar: React.FC<StatusBarProps> = ({
   });
   const invalidCount = totalCount - validGeohashes.length;
 
+  const statusClass =
+    invalidCount > 0 ? "is-error" : duplicateCount > 0 ? "is-warn" : "is-ok";
+
   return (
-    <div className="status-bar">
+    <div
+      className={`status-bar${isLoading ? " is-loading" : ""}`}
+      role="status"
+    >
       <div className="status-item">
-        <span className="status-label">Total:</span>
-        <span className="status-value">{totalCount}</span>
+        <span className="status-label">Total</span>
+        <span className="status-value" key={`t${totalCount}`}>
+          {totalCount}
+        </span>
       </div>
 
       {duplicateCount > 0 && (
-        <div className="status-item">
-          <span className="status-label">Duplicates:</span>
-          <span className="status-value" style={{ color: "#f59e0b" }}>
+        <div className="status-item is-warn">
+          <span className="status-label">Duplicates</span>
+          <span className="status-value" key={`d${duplicateCount}`}>
             {duplicateCount}
           </span>
         </div>
       )}
 
       {invalidCount > 0 && (
-        <div className="status-item">
-          <span className="status-label">Invalid:</span>
-          <span className="status-value" style={{ color: "#ef4444" }}>
+        <div className="status-item is-error">
+          <span className="status-label">Invalid</span>
+          <span className="status-value" key={`i${invalidCount}`}>
             {invalidCount}
           </span>
         </div>
       )}
 
       {duplicateCount === 0 && invalidCount === 0 && (
-        <div className="status-item">
-          <span className="status-label">Status:</span>
-          <span className="status-value" style={{ color: "#10b981" }}>
-            ✓ Clean
-          </span>
+        <div className={`status-item ${statusClass}`}>
+          <span className="status-label">Status</span>
+          <span className="status-value">Clean</span>
         </div>
       )}
 
       {isLoading && (
         <div className="status-item">
-          <div className="loading-spinner"></div>
-          <span className="status-label">Processing...</span>
+          <span className="status-label">Plotting…</span>
         </div>
       )}
 
-      <div className="status-item">
-        <span className="status-label">Keyboard:</span>
-        <kbd className="keyboard-shortcut">Shift + F</kbd>
+      <div className="status-item status-keys">
+        <kbd className="keyboard-shortcut">Shift F</kbd>
+        <span className="status-label">fit</span>
+        <kbd className="keyboard-shortcut">Esc</kbd>
+        <span className="status-label">clear highlight</span>
       </div>
     </div>
   );

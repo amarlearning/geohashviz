@@ -43,7 +43,7 @@ const AdvancedOptions: React.FC<AdvancedOptionsProps> = ({
         aria-label="Toggle advanced options"
         type="button"
       >
-        <span className="advanced-options-label">Advanced Options</span>
+        <span className="advanced-options-label">Advanced options</span>
         <svg
           className={`chevron-icon ${expanded ? "expanded" : ""}`}
           width="20"

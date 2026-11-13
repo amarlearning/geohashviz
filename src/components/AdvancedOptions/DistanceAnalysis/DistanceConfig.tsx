@@ -192,7 +192,9 @@ const DistanceConfig: React.FC<DistanceConfigProps> = ({
               fill="none"
             />
           </svg>
-          <span>💡 Click on lines or geohashes to highlight connections</span>
+          <span>
+            Click a line or a cell on the map to highlight its connections.
+          </span>
         </div>
       </div>
 

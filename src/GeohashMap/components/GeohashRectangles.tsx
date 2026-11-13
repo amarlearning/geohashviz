@@ -5,7 +5,10 @@ import "./GeohashRectangles.css";
 import {
   BOUNDING_BOX_COLOR,
   BOUNDING_BOX_OPACITY,
+  FILL_OPACITY,
+  HIGHLIGHT_COLOR,
   REFERENCE_GEOHASH_COLOR,
+  traceIn,
 } from "../config/styleConfig";
 import {
   DistanceConfig,
@@ -19,6 +22,10 @@ interface GeohashRectanglesProps {
   distances?: DistanceResult[];
   highlightState?: HighlightState;
   onGeohashClick?: (geohash: string) => void;
+  /** Cell the user is pointing at or has pinned in the index */
+  focusedGeohash?: string | null;
+  onCellHover?: (geohash: string | null) => void;
+  onCellPin?: (geohash: string) => void;
 }
 
 // Use stable, deterministic keys to avoid unnecessary re-mounts
@@ -27,137 +34,75 @@ const rectangleKey = (geohash: string, index: number): string =>
 const tooltipKey = (geohash: string, index: number): string =>
   `${geohash}-tt-${index}`;
 
-/**
- * Gets tooltip content with optional distance information
- * @param geohash - The geohash object
- * @param distanceConfig - Distance analysis configuration
- * @param distances - Array of distance results
- * @returns Formatted tooltip content
- */
+const isReference = (geohash: Geohash, distanceConfig?: DistanceConfig) =>
+  !!distanceConfig?.enabled &&
+  distanceConfig.mode === "reference" &&
+  geohash.geohash === distanceConfig.referenceGeohash;
+
+const isHighlighted = (geohash: Geohash, highlightState?: HighlightState) => {
+  if (highlightState?.highlightedGeohash === geohash.geohash) return true;
+  const line = highlightState?.highlightedLine;
+  return (
+    !!line && (geohash.geohash === line.from || geohash.geohash === line.to)
+  );
+};
+
+const hasHighlight = (highlightState?: HighlightState) =>
+  !!(highlightState?.highlightedGeohash || highlightState?.highlightedLine);
+
 const getTooltipContent = (
   geohash: Geohash,
-  distanceConfig?: DistanceConfig,
-  distances?: DistanceResult[]
-): string => {
-  // Check if this is the reference geohash in reference mode
-  if (
-    distanceConfig?.enabled &&
-    distanceConfig.mode === "reference" &&
-    geohash.geohash === distanceConfig.referenceGeohash
-  ) {
-    return `⭐ ${geohash.geohash} (Reference)`;
-  }
-
-  // Return just the geohash without distance information
-  return geohash.geohash;
-};
+  distanceConfig?: DistanceConfig
+): string =>
+  isReference(geohash, distanceConfig)
+    ? `${geohash.geohash} (reference)`
+    : geohash.geohash;
 
 /**
  * Gets the color for a geohash rectangle
- * @param geohash - The geohash object
- * @param distanceConfig - Distance analysis configuration
- * @param highlightState - Current highlight state
- * @returns Color string
  */
 const getRectangleColor = (
   geohash: Geohash,
   distanceConfig?: DistanceConfig,
   highlightState?: HighlightState
 ): string => {
-  // Use green color if this geohash is highlighted
-  if (highlightState?.highlightedGeohash === geohash.geohash) {
-    return "#10B981"; // Green for highlighted geohash
+  if (isHighlighted(geohash, highlightState)) return HIGHLIGHT_COLOR;
+  if (isReference(geohash, distanceConfig) && !hasHighlight(highlightState)) {
+    return REFERENCE_GEOHASH_COLOR;
   }
-
-  // Use green color if this geohash is part of a highlighted line
-  if (highlightState?.highlightedLine) {
-    const { from, to } = highlightState.highlightedLine;
-    if (geohash.geohash === from || geohash.geohash === to) {
-      return "#10B981"; // Green for highlighted line endpoints
-    }
-  }
-
-  // Use green color for reference geohash in reference mode (if not dimmed)
-  if (
-    distanceConfig?.enabled &&
-    distanceConfig.mode === "reference" &&
-    geohash.geohash === distanceConfig.referenceGeohash &&
-    !highlightState?.highlightedGeohash &&
-    !highlightState?.highlightedLine
-  ) {
-    return REFERENCE_GEOHASH_COLOR; // Green for reference
-  }
-  return BOUNDING_BOX_COLOR; // Default purple
+  return BOUNDING_BOX_COLOR;
 };
 
 /**
  * Gets the border weight for a geohash rectangle
- * @param geohash - The geohash object
- * @param distanceConfig - Distance analysis configuration
- * @param highlightState - Current highlight state
- * @returns Border weight number
  */
 const getRectangleWeight = (
   geohash: Geohash,
   distanceConfig?: DistanceConfig,
-  highlightState?: HighlightState
+  highlightState?: HighlightState,
+  focusedGeohash?: string | null
 ): number => {
-  // Extra thick border if this geohash is highlighted
-  if (highlightState?.highlightedGeohash === geohash.geohash) {
-    return 4;
-  }
-
-  // Thick border if this geohash is part of a highlighted line
-  if (highlightState?.highlightedLine) {
-    const { from, to } = highlightState.highlightedLine;
-    if (geohash.geohash === from || geohash.geohash === to) {
-      return 4;
-    }
-  }
-
-  // Use thicker border for reference geohash in reference mode
-  if (
-    distanceConfig?.enabled &&
-    distanceConfig.mode === "reference" &&
-    geohash.geohash === distanceConfig.referenceGeohash
-  ) {
-    return 3; // Thicker border for reference
-  }
-  return 1; // Default weight
+  if (isHighlighted(geohash, highlightState)) return 3.5;
+  if (focusedGeohash === geohash.geohash) return 3;
+  if (isReference(geohash, distanceConfig)) return 2.5;
+  return 1.5;
 };
 
 /**
- * Gets the opacity for a geohash rectangle
- * @param geohash - The geohash object
- * @param highlightState - Current highlight state
- * @returns Opacity value
+ * Gets the opacity for a geohash rectangle: highlighted or focused cells
+ * stay solid, the rest recede.
  */
 const getRectangleOpacity = (
   geohash: Geohash,
-  highlightState?: HighlightState
+  highlightState?: HighlightState,
+  focusedGeohash?: string | null
 ): number => {
-  if (!highlightState) return BOUNDING_BOX_OPACITY;
-
-  // If something is highlighted
-  if (highlightState.highlightedGeohash || highlightState.highlightedLine) {
-    // Check if this geohash is highlighted
-    if (highlightState.highlightedGeohash === geohash.geohash) {
-      return 1; // Full opacity
-    }
-
-    // Check if this geohash is part of highlighted line
-    if (highlightState.highlightedLine) {
-      const { from, to } = highlightState.highlightedLine;
-      if (geohash.geohash === from || geohash.geohash === to) {
-        return 1; // Full opacity
-      }
-    }
-
-    // Dim other geohashes
-    return 0.3;
+  if (hasHighlight(highlightState)) {
+    return isHighlighted(geohash, highlightState) ? 1 : 0.3;
   }
-
-  return BOUNDING_BOX_OPACITY;
+  // A focused cell is emphasised, never by fading the others: every
+  // plotted cell must stay readable next to the dashed suggestions
+  return focusedGeohash === geohash.geohash ? 1 : BOUNDING_BOX_OPACITY;
 };
 
 /**
@@ -167,60 +112,84 @@ const getRectangleOpacity = (
 const GeohashRectangles: React.FC<GeohashRectanglesProps> = ({
   geohashes,
   distanceConfig,
-  distances,
   highlightState,
   onGeohashClick,
+  focusedGeohash,
+  onCellHover,
+  onCellPin,
 }) => {
   const rectangles = useMemo(
     () =>
       geohashes.map((geohash, index) => {
-        const color = getRectangleColor(
+        const opacity = getRectangleOpacity(
           geohash,
-          distanceConfig,
-          highlightState
+          highlightState,
+          focusedGeohash
         );
-        const weight = getRectangleWeight(
-          geohash,
-          distanceConfig,
-          highlightState
-        );
-        const opacity = getRectangleOpacity(geohash, highlightState);
-        const tooltipContent = getTooltipContent(
-          geohash,
-          distanceConfig,
-          distances
-        );
+        const emphasised =
+          isHighlighted(geohash, highlightState) ||
+          focusedGeohash === geohash.geohash;
+        const pathOptions = {
+          // Keep cell clicks off the map, where a click dismisses suggestions
+          bubblingMouseEvents: false,
+          color: getRectangleColor(geohash, distanceConfig, highlightState),
+          weight: getRectangleWeight(
+            geohash,
+            distanceConfig,
+            highlightState,
+            focusedGeohash
+          ),
+          opacity,
+          fillOpacity: emphasised
+            ? FILL_OPACITY * 2.2
+            : opacity < 0.5
+              ? FILL_OPACITY * 0.4
+              : FILL_OPACITY,
+        };
+        const dimmed = opacity < 0.5;
 
         return (
           <Rectangle
             bounds={geohash.boundingBox}
-            color={color}
-            opacity={opacity}
-            weight={weight}
+            pathOptions={pathOptions}
             key={rectangleKey(geohash.geohash, index)}
             eventHandlers={{
+              add: (e) =>
+                traceIn(e.target.getElement?.(), Math.min(index, 24) * 70),
               click: () => {
-                if (onGeohashClick && distanceConfig?.enabled) {
-                  onGeohashClick(geohash.geohash);
+                if (distanceConfig?.enabled) {
+                  onGeohashClick?.(geohash.geohash);
+                } else {
+                  onCellPin?.(geohash.geohash);
                 }
               },
+              mouseover: () => onCellHover?.(geohash.geohash),
+              mouseout: () => onCellHover?.(null),
             }}
-            className={`geohash-rectangle ${
-              distanceConfig?.enabled ? "geohash-rectangle-clickable" : ""
-            }`}
+            className="geohash-rectangle geohash-rectangle-clickable"
           >
             <Tooltip
-              key={tooltipKey(geohash.geohash, index)}
+              key={`${tooltipKey(geohash.geohash, index)}-${emphasised}-${dimmed}`}
               permanent
               direction={"top"}
-              className="custom-tooltip"
+              className={`custom-tooltip${emphasised ? " is-focus" : ""}${
+                dimmed ? " is-dim" : ""
+              }`}
             >
-              {tooltipContent}
+              {getTooltipContent(geohash, distanceConfig)}
             </Tooltip>
           </Rectangle>
         );
       }),
-    [geohashes, distanceConfig, distances, highlightState, onGeohashClick]
+    [
+      geohashes,
+      distanceConfig,
+      highlightState,
+      onGeohashClick,
+      focusedGeohash,
+      onCellHover,
+      onCellPin,
+    ]
   );
 
   return <>{rectangles}</>;
