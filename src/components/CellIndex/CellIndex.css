@@ -44,6 +44,7 @@
   margin: 0 calc(var(--space-s) * -1);
   padding: 0;
   max-height: 220px;
+  overflow-x: hidden;
   overflow-y: auto;
   scrollbar-width: thin;
 }
@@ -86,10 +87,6 @@
   background: var(--color-accent-wash);
 }
 
-.cell-row.is-active {
-  transform: translateX(3px);
-}
-
 .cell-row.is-active::before,
 .cell-row.is-pinned::before {
   transform: scaleY(1);
@@ -99,8 +96,9 @@
   background: var(--color-accent-wash-2);
 }
 
+/* Press feedback shrinks inward only, so the row never overflows the list */
 .cell-row:active {
-  transform: translateX(3px) scale(0.99);
+  transform: scale(0.99);
 }
 
 .hash-chars {
